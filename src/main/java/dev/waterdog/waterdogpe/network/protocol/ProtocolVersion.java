@@ -129,7 +129,8 @@ public enum ProtocolVersion {
     MINECRAFT_PE_1_21_90(818, Bedrock_v818.CODEC),
     MINECRAFT_PE_1_21_93(819, Bedrock_v819.CODEC),
 
-    MINECRAFT_PE_NETEASE_1_21_2(MINECRAFT_PE_1_21_2.getProtocol(), Bedrock_NetEase.CODEC);
+    MINECRAFT_PE_NETEASE_1_21_2(MINECRAFT_PE_1_21_2.getProtocol(), Bedrock_NetEase.CODEC),
+    MINECRAFT_PE_NETEASE_1_21_50(MINECRAFT_PE_1_21_50.getProtocol(), Bedrock_NetEase.CODEC);
 
     private static final ProtocolVersion[] VALUES = values();
     private static final Int2ObjectMap<ProtocolVersion> VERSIONS = new Int2ObjectOpenHashMap<>();

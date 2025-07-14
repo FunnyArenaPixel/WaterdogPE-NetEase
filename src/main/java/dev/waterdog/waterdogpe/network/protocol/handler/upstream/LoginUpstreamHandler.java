@@ -125,8 +125,11 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
         if (!this.attemptLogin() || (protocol = this.checkVersion(packet.getProtocolVersion())) == null) {
             return PacketSignal.HANDLED;
         }
-        if (protocol.getRaknetVersion() == 8 && protocol.getProtocol() == ProtocolVersion.MINECRAFT_PE_1_21_2.getProtocol())
-            protocol = ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_2;
+        if (protocol.getRaknetVersion() == 8) {
+            if (protocol == ProtocolVersion.MINECRAFT_PE_1_21_2) protocol = ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_2;
+            if (protocol == ProtocolVersion.MINECRAFT_PE_1_21_50)
+                protocol = ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_50;
+        }
 
         BedrockCodec codec = this.session.getCodec();
         if (codec == null || codec == BedrockCompat.CODEC) {
@@ -200,4 +203,5 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
         this.session.sendPacket(status);
         this.player.initPlayer();
     }
+
 }
