@@ -15,6 +15,7 @@
 
 package dev.waterdog.waterdogpe.network.protocol;
 
+import dev.waterdog.waterdogpe.network.protocol.netease.Bedrock_NetEase;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.ToString;
@@ -127,10 +128,12 @@ public enum ProtocolVersion {
     MINECRAFT_PE_1_21_80(800, Bedrock_v800.CODEC),
     MINECRAFT_PE_1_21_90(818, Bedrock_v818.CODEC),
     MINECRAFT_PE_1_21_93(819, Bedrock_v819.CODEC),
-    ;
+
+    MINECRAFT_PE_NETEASE_1_21_2(MINECRAFT_PE_1_21_2.getProtocol(), Bedrock_NetEase.CODEC);
 
     private static final ProtocolVersion[] VALUES = values();
     private static final Int2ObjectMap<ProtocolVersion> VERSIONS = new Int2ObjectOpenHashMap<>();
+
     static {
         for (ProtocolVersion version : values()) {
             VERSIONS.putIfAbsent(version.getProtocol(), version);

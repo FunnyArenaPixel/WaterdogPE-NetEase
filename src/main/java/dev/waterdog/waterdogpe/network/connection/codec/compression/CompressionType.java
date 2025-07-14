@@ -47,6 +47,14 @@ public class CompressionType implements Comparable<CompressionType>, Compression
             .bedrockAlgorithm(PacketCompressionAlgorithm.SNAPPY)
             .register();
 
+    /**
+     * NetEase_UNKNOWN
+     */
+    public static final CompressionType NETEASE_UNKNOWN = CompressionType.builder()
+            .identifier("netease_unknown")
+            .bedrockAlgorithm(PacketCompressionAlgorithm.ZLIB)
+            .register();
+
     private final String identifier;
     private final PacketCompressionAlgorithm bedrockAlgorithm;
     private final byte headerId;

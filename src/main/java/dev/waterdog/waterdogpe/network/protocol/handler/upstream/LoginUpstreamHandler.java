@@ -84,9 +84,7 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
         }
 
         PlayStatusPacket status = new PlayStatusPacket();
-        status.setStatus((protocolVersion > WaterdogPE.version().latestProtocolVersion() ?
-                PlayStatusPacket.Status.LOGIN_FAILED_SERVER_OLD :
-                PlayStatusPacket.Status.LOGIN_FAILED_CLIENT_OLD));
+        status.setStatus((protocolVersion > WaterdogPE.version().latestProtocolVersion() ? PlayStatusPacket.Status.LOGIN_FAILED_SERVER_OLD : PlayStatusPacket.Status.LOGIN_FAILED_CLIENT_OLD));
         this.session.sendPacketImmediately(status);
         this.session.disconnect();
         this.proxy.getLogger().warning("[{}] <-> Upstream has disconnected due to incompatible protocol (protocol={})", this.session.getSocketAddress(), protocolVersion);
@@ -127,6 +125,8 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
         if (!this.attemptLogin() || (protocol = this.checkVersion(packet.getProtocolVersion())) == null) {
             return PacketSignal.HANDLED;
         }
+        if (protocol.getRaknetVersion() == 8 && protocol.getProtocol() == ProtocolVersion.MINECRAFT_PE_1_21_2.getProtocol())
+            protocol = ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_2;
 
         BedrockCodec codec = this.session.getCodec();
         if (codec == null || codec == BedrockCompat.CODEC) {
@@ -154,14 +154,13 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
             }
 
             // Thank you Mojang: this version includes protocol changes, but protocol version was not increased.
-            if (protocol.equals(ProtocolVersion.MINECRAFT_PE_1_19_60) && handshakeEntry.getClientData().has("GameVersion") &&
-                    ProtocolVersion.MINECRAFT_PE_1_19_62.getMinecraftVersion().equals(handshakeEntry.getClientData().get("GameVersion").getAsString())) {;
+            if (protocol.equals(ProtocolVersion.MINECRAFT_PE_1_19_60) && handshakeEntry.getClientData().has("GameVersion") && ProtocolVersion.MINECRAFT_PE_1_19_62.getMinecraftVersion().equals(handshakeEntry.getClientData().get("GameVersion").getAsString())) {
+                ;
                 handshakeEntry.setProtocol(protocol = ProtocolVersion.MINECRAFT_PE_1_19_62);
                 this.session.getPeer().setProtocol(protocol);
             }
 
-            this.proxy.getLogger().info("[{}|{}] <-> Upstream has connected (protocol={} version={})", this.session.getSocketAddress(), handshakeEntry.getDisplayName(),
-                    protocol.getProtocol(), protocol.getMinecraftVersion());
+            this.proxy.getLogger().info("[{}|{}] <-> Upstream has connected (protocol={} version={})", this.session.getSocketAddress(), handshakeEntry.getDisplayName(), protocol.getProtocol(), protocol.getMinecraftVersion());
 
             LoginData loginData = handshakeEntry.buildData(this.session, this.proxy);
 
@@ -172,8 +171,7 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
                 return PacketSignal.HANDLED;
             }
 
-            this.player = loginEvent.getBaseClass().getConstructor(ProxyServer.class, BedrockServerSession.class, CompressionType.class, LoginData.class)
-                    .newInstance(this.proxy, this.session, this.compression, loginData);
+            this.player = loginEvent.getBaseClass().getConstructor(ProxyServer.class, BedrockServerSession.class, CompressionType.class, LoginData.class).newInstance(this.proxy, this.session, this.compression, loginData);
             if (!this.proxy.getPlayerManager().registerPlayer(this.player)) {
                 return PacketSignal.HANDLED;
             }
