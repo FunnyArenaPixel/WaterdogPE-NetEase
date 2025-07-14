@@ -137,7 +137,8 @@ public enum ProtocolVersion {
 
     static {
         for (ProtocolVersion version : values()) {
-            VERSIONS.putIfAbsent(version.getProtocol(), version);
+            if (version.bedrockCodec != Bedrock_NetEase.CODEC)
+                VERSIONS.putIfAbsent(version.getProtocol(), version);
         }
     }
 
