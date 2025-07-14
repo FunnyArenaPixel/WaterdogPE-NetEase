@@ -58,7 +58,7 @@ public class ProxiedPlayer implements CommandSender {
     private final ProxyServer proxy;
 
     private final BedrockServerSession connection;
-    private final CompressionType compression;
+    private CompressionType compression;
 
     private final AtomicBoolean disconnected = new AtomicBoolean(false);
     private final AtomicBoolean loginCalled = new AtomicBoolean(false);
@@ -109,6 +109,10 @@ public class ProxiedPlayer implements CommandSender {
      * Do not set directly BedrockPacketHandler to sessions!
      */
     private final Collection<PluginPacketHandler> pluginPacketHandlers = new ObjectArrayList<>();
+    /*
+     *  网易客户端
+     */
+    public boolean isNetEase;
 
     public ProxiedPlayer(ProxyServer proxy, BedrockServerSession session, CompressionType compression, LoginData loginData) {
         this.proxy = proxy;
@@ -147,6 +151,12 @@ public class ProxiedPlayer implements CommandSender {
             if (!this.isConnected() || this.disconnectReason != null) { // player might have disconnected itself
                 this.disconnect(this.disconnectReason == null ? "Already disconnected" : this.disconnectReason);
                 return;
+            }
+
+            //网易客户端
+            if (this.getProtocol().getRaknetVersion() == 8 && this.getProtocol().getProtocol() == ProtocolVersion.MINECRAFT_PE_1_21_2.getProtocol()) {
+                this.isNetEase = true;
+                this.compression = CompressionType.NONE;
             }
 
             if (this.proxy.getConfiguration().enableResourcePacks()) {
@@ -273,8 +283,7 @@ public class ProxiedPlayer implements CommandSender {
 
         this.setPendingConnection(connection);
 
-        connection.setCodecHelper(this.getProtocol().getCodec(),
-                this.connection.getPeer().getCodecHelper());
+        connection.setCodecHelper(this.getProtocol().getCodec(), this.connection.getPeer().getCodecHelper());
 
         BedrockPacketHandler handler;
         if (this.clientConnection == null) {
@@ -377,7 +386,7 @@ public class ProxiedPlayer implements CommandSender {
      *
      * @param oldServer server from which was player disconnected.
      * @param reason    disconnected reason.
-     * @param message    disconnected message.
+     * @param message   disconnected message.
      * @return if connection to downstream was successful.
      */
     public boolean sendToFallback(ServerInfo oldServer, ReconnectReason reason, String message) {
@@ -403,8 +412,7 @@ public class ProxiedPlayer implements CommandSender {
     }
 
     public final void onDownstreamDisconnected(ClientConnection connection) {
-        this.getLogger().info("[" + connection.getSocketAddress() + "|" + this.getName() + "] -> Downstream [" +
-                connection.getServerInfo().getServerName() + "] has disconnected");
+        this.getLogger().info("[" + connection.getSocketAddress() + "|" + this.getName() + "] -> Downstream [" + connection.getServerInfo().getServerName() + "] has disconnected");
         if (this.getPendingConnection() == connection) {
             this.setPendingConnection(null);
         }
@@ -632,7 +640,7 @@ public class ProxiedPlayer implements CommandSender {
     /**
      * Sends a toast notification with a message to the player
      *
-     * @param title the notification title
+     * @param title   the notification title
      * @param content the message content
      */
     public void sendToastMessage(String title, String content) {
@@ -925,11 +933,6 @@ public class ProxiedPlayer implements CommandSender {
 
     @Override
     public String toString() {
-        return "ProxiedPlayer(displayName=" + this.getName() +
-                ", protocol=" + this.getProtocol() +
-                ", connected=" + this.isConnected() +
-                ", address=" + this.getAddress() +
-                ", serverInfo=" + this.getServerInfo() +
-                ")";
+        return "ProxiedPlayer(displayName=" + this.getName() + ", protocol=" + this.getProtocol() + ", connected=" + this.isConnected() + ", address=" + this.getAddress() + ", serverInfo=" + this.getServerInfo() + ")";
     }
 }

@@ -25,8 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProtocolCodecs {
-    
+
     private static final List<Class<? extends BedrockPacket>> HANDLED_PACKETS = new ArrayList<>();
+
     static {
         HANDLED_PACKETS.add(LoginPacket.class);
         HANDLED_PACKETS.add(PlayStatusPacket.class);
@@ -39,7 +40,6 @@ public class ProtocolCodecs {
         HANDLED_PACKETS.add(ResourcePackDataInfoPacket.class);
         HANDLED_PACKETS.add(ResourcePackChunkDataPacket.class);
         HANDLED_PACKETS.add(ResourcePackChunkRequestPacket.class);
-        HANDLED_PACKETS.add(TextPacket.class);
         HANDLED_PACKETS.add(StartGamePacket.class);
         HANDLED_PACKETS.add(AddPlayerPacket.class);
         HANDLED_PACKETS.add(AddEntityPacket.class);
@@ -113,10 +113,14 @@ public class ProtocolCodecs {
         HANDLED_PACKETS.add(ClientCheatAbilityPacket.class);
         HANDLED_PACKETS.add(ToastRequestPacket.class);
         HANDLED_PACKETS.add(MovementEffectPacket.class);
+        //NetEase
+        HANDLED_PACKETS.add(TextPacket.class);
+        HANDLED_PACKETS.add(PlayerAuthInputPacket.class);
     }
 
     private static final List<ProtocolCodecUpdater> UPDATERS = new ObjectArrayList<>();
     private static final ProtocolCodecUpdater DEFAULT_UPDATER = (builder, codec) -> builder.retainPackets(HANDLED_PACKETS.toArray(new Class[]{}));
+
     static {
         UPDATERS.add(new CodecUpdater419());
     }
