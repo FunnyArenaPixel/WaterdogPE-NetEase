@@ -44,9 +44,31 @@ public class CompressionInitHandler extends AbstractDownstreamHandler {
     @Override
     public PacketSignal handle(NetworkSettingsPacket packet) {
         CompressionType compression = CompressionType.fromBedrockCompression(packet.getCompressionAlgorithm());
-        this.connection.setCompression(compression);
-        this.connection.setPacketHandler(nextHandler);
-        this.connection.sendPacket(this.player.getLoginData().getLoginPacket());
+        try {
+            this.connection.setCompression(compression);
+            this.connection.setPacketHandler(nextHandler);
+            this.connection.sendPacket(this.player.getLoginData().getLoginPacket());
+        } catch (Exception e1) {
+            try {
+                this.connection.setCompression(CompressionType.ZLIB);
+                this.connection.setPacketHandler(nextHandler);
+                this.connection.sendPacket(this.player.getLoginData().getLoginPacket());
+            } catch (Exception e2) {
+                try {
+                    this.connection.setCompression(CompressionType.SNAPPY);
+                    this.connection.setPacketHandler(nextHandler);
+                    this.connection.sendPacket(this.player.getLoginData().getLoginPacket());
+                } catch (Exception e3) {
+                    try {
+                        this.connection.setCompression(CompressionType.NONE);
+                        this.connection.setPacketHandler(nextHandler);
+                        this.connection.sendPacket(this.player.getLoginData().getLoginPacket());
+                    } catch (Exception e4) {
+                        return Signals.CANCEL;
+                    }
+                }
+            }
+        }
         return Signals.CANCEL;
     }
 }

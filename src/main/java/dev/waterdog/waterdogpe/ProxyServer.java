@@ -156,7 +156,7 @@ public class ProxyServer {
         ThreadFactoryBuilder builder = ThreadFactoryBuilder
                 .builder()
                 .format("WaterdogTick Executor - #%d")
-                .build();
+                .daemon(true).build();
         this.tickExecutor = Executors.newScheduledThreadPool(1, builder);
 
         EventLoops.ChannelType channelType = EventLoops.getChannelType();

@@ -214,7 +214,7 @@
                             <Main-Class>dev.waterdog.waterdogpe.WaterdogPE</Main-Class>
                         </manifestEntries>
                     </archive>
-                    <finalName>Waterdog</finalName>
+                    <finalName>Waterdog-NetEase</finalName>
                 </configuration>
             </plugin>
             <plugin>

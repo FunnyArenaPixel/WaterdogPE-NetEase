@@ -125,6 +125,8 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
         if (!this.attemptLogin() || (protocol = this.checkVersion(packet.getProtocolVersion())) == null) {
             return PacketSignal.HANDLED;
         }
+        //NetEase MultiVersion
+        //Catrainbow
         if (protocol.getRaknetVersion() == 8) {
             if (protocol == ProtocolVersion.MINECRAFT_PE_1_21_2) protocol = ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_2;
             if (protocol == ProtocolVersion.MINECRAFT_PE_1_21_50)
