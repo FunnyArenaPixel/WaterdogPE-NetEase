@@ -73,6 +73,10 @@ public class BedrockClientConnection extends SimpleChannelInboundHandler<Bedrock
             this.compressionStrategy = player.getConnection().getPeer().getRakVersion() < 10 ?
                     ProxiedSessionInitializer.ZLIB_STRATEGY : ProxiedSessionInitializer.ZLIB_RAW_STRATEGY;
         }
+        if (player.getProtocol().getRaknetVersion() == 8 && (player.getProtocol().getProtocol() == ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_2.getProtocol() ||
+                player.getProtocol().getProtocol() == ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_50.getProtocol())) {
+            this.compressionStrategy = ProxiedSessionInitializer.NOOP_STRATEGY;
+        }
     }
 
     @Override

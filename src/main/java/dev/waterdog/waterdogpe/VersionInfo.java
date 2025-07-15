@@ -23,8 +23,8 @@ public class VersionInfo {
     public static final boolean DEFAULT_DEBUG = true;
 
     private final String baseVersion = "2.0.4";
-    private final String buildVersion = "#build";
-    private final String author = "WaterdogTEAM";
+    private final String buildVersion = "#NetEase";
+    private final String author = "WaterdogTEAM & FAPIXEL";
     private final int metricsId = 15678;
     private final int latestProtocolVersion;
 

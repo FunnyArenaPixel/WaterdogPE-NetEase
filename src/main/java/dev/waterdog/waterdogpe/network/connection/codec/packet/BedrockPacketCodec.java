@@ -21,8 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import lombok.extern.log4j.Log4j2;
 import org.cloudburstmc.protocol.bedrock.PacketDirection;
-import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
-import org.cloudburstmc.protocol.bedrock.codec.BedrockCodecHelper;
+import org.cloudburstmc.protocol.bedrock.codec.*;
 import org.cloudburstmc.protocol.bedrock.codec.compat.BedrockCompat;
 import org.cloudburstmc.protocol.bedrock.data.EncodingSettings;
 import org.cloudburstmc.protocol.bedrock.data.PacketRecipient;
@@ -114,13 +113,12 @@ public abstract class BedrockPacketCodec extends MessageToMessageCodec<BedrockBa
                 wrapper.setPacket(this.codec.tryDecode(helper, msg, wrapper.getPacketId(), this.inboundRecipient));
             }
         } catch (Throwable t) {
-            log.error("Failed to decode packet", t);
+            log.error("数据包解析失败!", t);
             throw t;
         } finally {
             msg.release();
         }
     }
-
     public abstract void encodeHeader(ByteBuf buf, BedrockPacketWrapper msg);
 
     public abstract void decodeHeader(ByteBuf buf, BedrockPacketWrapper msg);

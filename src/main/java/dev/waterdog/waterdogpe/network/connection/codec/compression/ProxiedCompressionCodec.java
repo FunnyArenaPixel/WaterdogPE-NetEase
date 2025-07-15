@@ -15,67 +15,20 @@
 
 package dev.waterdog.waterdogpe.network.connection.codec.compression;
 
+import dev.waterdog.waterdogpe.ProxyServer;
 import dev.waterdog.waterdogpe.network.NetworkMetrics;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.cloudburstmc.protocol.bedrock.PacketDirection;
 import org.cloudburstmc.protocol.bedrock.data.CompressionAlgorithm;
-import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import org.cloudburstmc.protocol.bedrock.netty.BedrockBatchWrapper;
-import org.cloudburstmc.protocol.bedrock.netty.codec.compression.BatchCompression;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.CompressionCodec;
 import org.cloudburstmc.protocol.bedrock.netty.codec.compression.CompressionStrategy;
-
-import java.util.List;
 
 public class ProxiedCompressionCodec extends CompressionCodec {
     public ProxiedCompressionCodec(CompressionStrategy strategy, boolean prefixed) {
         super(strategy, prefixed);
     }
-
-    @Override
-    protected void decode(ChannelHandlerContext ctx, BedrockBatchWrapper msg, List<Object> out) {
-        ByteBuf compressed = msg.getCompressed().slice();
-        BatchCompression compression;
-        try {
-            CompressionAlgorithm algorithm = this.getCompressionAlgorithm(compressed.readByte());
-            compression = this.getStrategy().getCompression(algorithm);
-            msg.setAlgorithm(compression.getAlgorithm());
-            msg.setUncompressed(compression.decode(ctx, compressed.slice()));
-            this.onDecompressed(ctx, msg);
-            out.add(msg.retain());
-        } catch (Exception e1) {
-            try {
-                CompressionAlgorithm algorithm = PacketCompressionAlgorithm.ZLIB;
-                compression = this.getStrategy().getCompression(algorithm);
-                msg.setAlgorithm(compression.getAlgorithm());
-                msg.setUncompressed(compression.decode(ctx, compressed.slice()));
-                this.onDecompressed(ctx, msg);
-                out.add(msg.retain());
-            } catch (Exception e2) {
-                try {
-                    CompressionAlgorithm algorithm = PacketCompressionAlgorithm.SNAPPY;
-                    compression = this.getStrategy().getCompression(algorithm);
-                    msg.setAlgorithm(compression.getAlgorithm());
-                    msg.setUncompressed(compression.decode(ctx, compressed.slice()));
-                    this.onDecompressed(ctx, msg);
-                    out.add(msg.retain());
-                } catch (Exception e3) {
-                    try {
-                        CompressionAlgorithm algorithm = PacketCompressionAlgorithm.NONE;
-                        compression = this.getStrategy().getCompression(algorithm);
-                        msg.setAlgorithm(compression.getAlgorithm());
-                        msg.setUncompressed(compression.decode(ctx, compressed.slice()));
-                        this.onDecompressed(ctx, msg);
-                        out.add(msg.retain());
-                    } catch (Exception e4) {
-                        e4.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
-
     @Override
     protected void onPassedThrough(ChannelHandlerContext ctx, BedrockBatchWrapper msg) {
         NetworkMetrics metrics = ctx.channel().attr(NetworkMetrics.ATTRIBUTE).get();

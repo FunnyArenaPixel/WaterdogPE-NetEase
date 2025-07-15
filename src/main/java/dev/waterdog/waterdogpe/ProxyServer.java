@@ -327,7 +327,7 @@ public class ProxyServer {
         this.pluginManager.disableAllPlugins();
         String disconnectReason = new TranslationContainer("waterdog.server.shutdown").getTranslated();
         for (Map.Entry<UUID, ProxiedPlayer> player : this.playerManager.getPlayers().entrySet()) {
-            this.logger.info("Disconnecting " + player.getValue().getName());
+            this.logger.info("断开连接 " + player.getValue().getName());
             player.getValue().disconnect(disconnectReason);
         }
         Thread.sleep(500); // Give small delay to send packet
@@ -355,7 +355,7 @@ public class ProxyServer {
             this.logger.info("Interrupting scheduler!");
             this.tickFuture.cancel(true);
         }
-        this.logger.info("Shutdown complete!");
+        this.logger.info("Waterdog已完全关闭");
     }
 
     public String translate(TextContainer textContainer) {

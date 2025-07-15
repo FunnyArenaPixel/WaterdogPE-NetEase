@@ -43,28 +43,23 @@ public class WaterdogPE {
 
     public static void main(String[] args) {
         Thread.currentThread().setName("WaterdogPE-main");
-        System.out.println("Starting WaterdogPE....");
+        System.out.println("正在启动 WaterdogPE....");
         System.setProperty("log4j.skipJansi", "false");
 
         MainLogger logger = MainLogger.getLogger();
-        logger.info("§bStarting WaterDogPE proxy software!");
-        logger.info("§3Software Version: {}", versionInfo.baseVersion());
-        logger.info("§3Build Version: {}", versionInfo.buildVersion());
-        logger.info("§3Development Build: {}", versionInfo.debug());
-        logger.info("§3Software Authors: {}", versionInfo.author());
-        logger.info("§3Latest Supported Game Version: {}", ProtocolVersion.latest().getMinecraftVersion());
+        logger.info("§b启动 WaterdogPE 软件中...");
+        logger.info("§3软件版本: {}", versionInfo.baseVersion());
+        logger.info("§3构建版本: {}", versionInfo.buildVersion());
+        logger.info("§3开发版本: {}", versionInfo.debug());
+        logger.info("§3软件作者: {}", versionInfo.author());
+        logger.info("§3最新支持的Minecraft版本: {}", ProtocolVersion.latest().getMinecraftVersion());
+        logger.info("§3注意: 这是一个NetEase构建的版本");
 
 
         int javaVersion = getJavaVersion();
         if (javaVersion < 17) {
-            logger.error("Using unsupported Java version! Minimum supported version is Java 17, found Java " + javaVersion);
+            logger.error("请使用Java17及以上版本来运行Waterdog,下载: " + javaVersion);
             return;
-        }
-
-        if (versionInfo.buildVersion().equals("#build") || versionInfo.branchName().equals("unknown")) {
-            logger.warning("Custom build? Unofficial builds should be not run in production!");
-        } else {
-            logger.info("§3Discovered branch §b{}§3 commitId §b{}", versionInfo.branchName(), versionInfo.commitId());
         }
 
         if (versionInfo.debug()) {
@@ -73,7 +68,7 @@ public class WaterdogPE {
             setLeakDetection(ResourceLeakDetector.Level.DISABLED);
         }
 
-        logger.info("§eUsing memory leak detection level: {}", ResourceLeakDetector.getLevel());
+        logger.info("§e内存泄露检测等级: {}", ResourceLeakDetector.getLevel());
         if (!versionInfo.debug() && ResourceLeakDetector.getLevel().ordinal() > ResourceLeakDetector.Level.SIMPLE.ordinal()) {
             logger.warning("§eUsing higher memory leak detection levels in production environment can affect application stability and performance!");
         }

@@ -154,7 +154,8 @@ public class ProxiedPlayer implements CommandSender {
             }
 
             //网易客户端
-            if (this.getProtocol().getRaknetVersion() == 8 && this.getProtocol().getProtocol() == ProtocolVersion.MINECRAFT_PE_1_21_2.getProtocol()) {
+            if (this.getProtocol().getRaknetVersion() == 8 && (this.getProtocol().getProtocol() == ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_2.getProtocol() ||
+                    this.getProtocol().getProtocol() == ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_50.getProtocol())) {
                 this.isNetEase = true;
                 this.compression = CompressionType.NONE;
             }

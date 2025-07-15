@@ -28,6 +28,7 @@ import dev.waterdog.waterdogpe.player.ProxiedPlayer;
 import dev.waterdog.waterdogpe.security.SecurityManager;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.codec.compat.BedrockCompat;
+import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacketHandler;
 import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.cloudburstmc.protocol.common.PacketSignal;
@@ -97,7 +98,19 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
         if (!this.attemptLogin() || (protocol = this.checkVersion(packet.getProtocolVersion())) == null) {
             return PacketSignal.HANDLED;
         }
+        //NetEase MultiVersion
+        //Catrainbow
+        boolean isNetEase = false;
+        if (protocol.getRaknetVersion() == 8) {
+            if (protocol == ProtocolVersion.MINECRAFT_PE_1_21_2) protocol = ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_2;
+            if (protocol == ProtocolVersion.MINECRAFT_PE_1_21_50)
+                protocol = ProtocolVersion.MINECRAFT_PE_NETEASE_1_21_50;
+            this.session.setCompression(PacketCompressionAlgorithm.NONE);
+            this.compression = CompressionType.NONE;
+            isNetEase = true;
+        }
 
+        this.proxy.getLogger().info("请求NetworkSettingPacket Proto:" + protocol.getProtocol() + " 客户端: " + (isNetEase ? "中国版" : "国际版"));
         this.session.setCodec(protocol.getCodec());
 
         if (protocol.isBefore(ProtocolVersion.MINECRAFT_PE_1_19_30)) {
@@ -105,15 +118,14 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
             this.proxy.getLogger().warning("[{}] <-> Upstream has requested network settings, but its version doesn't support it (protocol={})", this.session.getSocketAddress(), protocol.getProtocol());
             return PacketSignal.HANDLED;
         }
-
-        this.compression = this.proxy.getConfiguration().getCompression();
+        if (!isNetEase) this.compression = this.proxy.getConfiguration().getCompression();
 
         NetworkSettingsPacket settingsPacket = new NetworkSettingsPacket();
         settingsPacket.setCompressionThreshold(1);
-        settingsPacket.setCompressionAlgorithm(this.compression.getBedrockAlgorithm());
+        settingsPacket.setCompressionAlgorithm(PacketCompressionAlgorithm.ZLIB);
         this.session.sendPacketImmediately(settingsPacket);
 
-        if (!this.session.isSubClient()) {
+        if (!this.session.isSubClient() && !isNetEase) {
             this.session.getPeer().setCompression(this.compression);
         }
         return PacketSignal.HANDLED;
@@ -154,7 +166,7 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
             handshakeEntry = HandshakeUtils.processHandshake(this.session, packet, protocol, strictAuth);
             if (!handshakeEntry.isXboxAuthed() && strictAuth) {
                 this.onLoginFailed(handshakeEntry, null, "disconnectionScreen.notAuthenticated");
-                this.proxy.getLogger().info("[{}|{}] <-> Upstream has disconnected due to failed XBOX authentication!", this.session.getSocketAddress(), handshakeEntry.getDisplayName());
+                this.proxy.getLogger().info("[{}|{}] <-> 因未通过XBox验证而断开连接!", this.session.getSocketAddress(), handshakeEntry.getDisplayName());
                 return PacketSignal.HANDLED;
             }
 
@@ -165,7 +177,7 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
                 this.session.getPeer().setProtocol(protocol);
             }
 
-            this.proxy.getLogger().info("[{}|{}] <-> Upstream has connected (protocol={} version={})", this.session.getSocketAddress(), handshakeEntry.getDisplayName(), protocol.getProtocol(), protocol.getMinecraftVersion());
+            this.proxy.getLogger().info("[{}|{}] <-> 连接到服务器 (protocol={} version={})", this.session.getSocketAddress(), handshakeEntry.getDisplayName(), protocol.getProtocol(), protocol.getMinecraftVersion());
 
             LoginData loginData = handshakeEntry.buildData(this.session, this.proxy);
 
@@ -187,8 +199,8 @@ public class LoginUpstreamHandler implements BedrockPacketHandler {
                 this.finishConnection();
             }
         } catch (Exception e) {
-            this.onLoginFailed(handshakeEntry, e, "Login failed: " + e.getMessage());
-            this.proxy.getLogger().error("[{}] Unable to complete login", this.session.getSocketAddress(), e);
+            this.onLoginFailed(handshakeEntry, e, "登录失败: " + e.getMessage());
+            this.proxy.getLogger().error("[{}] 登录失败", this.session.getSocketAddress(), e);
         }
         return PacketSignal.HANDLED;
     }

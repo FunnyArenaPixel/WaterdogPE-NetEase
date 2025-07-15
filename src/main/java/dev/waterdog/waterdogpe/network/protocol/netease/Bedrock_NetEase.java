@@ -29,7 +29,7 @@ public class Bedrock_NetEase extends Bedrock_v686 {
             .protocolVersion(Bedrock_v686.CODEC.getProtocolVersion())
             .updateSerializer(TextPacket.class, NetEaseTextPacketHandler.INSTANCE)
             .updateSerializer(PlayerAuthInputPacket.class, NetEaseAuthInputPacketHandler.INSTANCE)
-            .raknetProtocolVersion(8)
+            .raknetProtocolVersion(9)
             .build();
 
 }

@@ -58,7 +58,7 @@ public class ProxiedServerSessionInitializer extends ProxiedSessionInitializer<B
 
     @Override
     protected BedrockServerSession createSession0(BedrockPeer peer, int subClientId) {
-        this.proxy.getLogger().debug("[" + peer.getSocketAddress() + "] <-> Received first data");
+        this.proxy.getLogger().debug("[" + peer.getSocketAddress() + "] <-> 发送第一个数据包 ");
         return new BedrockServerSession((ProxiedBedrockPeer) peer, subClientId);
     }
 
